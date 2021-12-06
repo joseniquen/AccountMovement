@@ -1,8 +1,10 @@
 package com.banck.accountmovements.infraestructure.repository;
 
+import com.banck.accountmovements.domain.Movement;
 import com.banck.accountmovements.infraestructure.model.dao.MovementDao;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  *

@@ -2,6 +2,7 @@ package com.banck.accountmovements.infraestructure.rest;
 
 import com.banck.accountmovements.domain.Movement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,8 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import com.banck.accountmovements.aplication.MovementOperations;
 import com.banck.accountmovements.utils.AccountType;
@@ -67,8 +70,9 @@ public class MovementController {
         c.setDate(dateTime.format(formatDate));
         c.setTime(dateTime.format(formatTime));
         c.setCorrect(true);
+
         return Mono.just(c).flatMap(o -> {
-            return operations.listByCustomerAndAccount(c.getCustomer(), c.getAccount()).collect(Collectors.summingInt(Movement::getAmount)).flatMap(r -> {
+            return operations.listByCustomerAndAccount(c.getCustomer(), c.getAccount()).collect(Collectors.summingDouble(Movement::getAmount)).flatMap(r -> {
 
                 boolean isAccountType = false;
                 for (AccountType tc : AccountType.values()) {
@@ -90,7 +94,16 @@ public class MovementController {
                     return Mono.just(ResponseEntity.ok("El codigo de Tipo Movimiento (" + c.getMovementType() + "), no existe!"));
                 }
 
-                if ((r + c.getAmount()) < 0) {
+                if(MovementType.CHARGE.equals(c.getMovementType())){//abono
+                    c.setAmount(c.getAmount() + c.getCantMovement());
+                }else{//retiro
+                    if (c.getAmount() < c.getCantMovement()) {
+                        return Mono.just(ResponseEntity.ok("El movimiento a efectuar sobrepasa el saldo disponible."));
+                    }else {
+                        c.setAmount(c.getAmount() - c.getCantMovement());
+                    }
+                }
+                if ((r + c.getAmount()) < 0.0) {
                     return Mono.just(ResponseEntity.ok("El movimiento a efectuar sobrepasa el saldo disponible."));
                 } else {
                     return operations.create(c).flatMap(i -> {

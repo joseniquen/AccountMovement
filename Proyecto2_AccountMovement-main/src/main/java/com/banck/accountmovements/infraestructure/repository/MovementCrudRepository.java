@@ -53,6 +53,7 @@ public class MovementCrudRepository implements MovementRepository {
         m.setAccountType(md.getAccountType());
         m.setCustomer(md.getCustomer());
         m.setAmount(md.getAmount());
+        m.setCantMovement(md.getCantMovement());
         m.setConcept(md.getConcept());
         m.setDate(md.getDate());
         m.setTime(md.getTime());
@@ -68,6 +69,7 @@ public class MovementCrudRepository implements MovementRepository {
         md.setAccountType(m.getAccountType());
         md.setCustomer(m.getCustomer());
         md.setAmount(m.getAmount());
+        md.setCantMovement(m.getCantMovement());
         md.setConcept(m.getConcept());
         md.setDate(m.getDate());
         md.setTime(m.getTime());

@@ -18,7 +18,8 @@ public class MovementDao {
     public String account;
     public String accountType;
     public String customer;
-    public int amount;
+    public double amount;
+    public double cantMovement;
     public String concept;
     public String date;
     public String time;
